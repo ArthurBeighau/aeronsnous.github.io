@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcul d'Aération</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+        input[type="number"], input[type="button"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        input[type="number"]:focus {
+            border-color: #5b9bd5;
+        }
+        .result {
+            background-color: #e0f7fa;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 4px;
+            display: none;
+        }
+        .result p {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+        .result span {
+            font-weight: bold;
+            color: #00796b;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Calcul d'Aération</h1>
+
+        <label for="volumePiece">Volume de la pièce (m³) :</label>
+        <input type="number" id="volumePiece" placeholder="Entrez le volume de la pièce" required>
+
+        <label for="nombrePersonnes">Nombre de personnes :</label>
+        <input type="number" id="nombrePersonnes" placeholder="Entrez le nombre de personnes" required>
+
+        <label for="surfaceOuvertures">Surface des ouvertures (m²) :</label>
+        <input type="number" id="surfaceOuvertures" placeholder="Entrez la surface des ouvertures" required>
+
+        <input type="button" value="Calculer" onclick="calculerAération()">
+
+        <div class="result" id="resultats">
+            <h2>Résultats :</h2>
+            <p>Temps d'aération : <span id="tempsAeration"></span> secondes</p>
+            <p>Fréquence d'aération : <span id="frequenceAeration"></span> m³/s</p>
+        </div>
+    </div>
+
+    <script>
+        function calculerAération() {
+            // Récupérer les valeurs saisies
+            let volumePiece = parseFloat(document.getElementById('volumePiece').value);
+            let nombrePersonnes = parseFloat(document.getElementById('nombrePersonnes').value);
+            let surfaceOuvertures = parseFloat(document.getElementById('surfaceOuvertures').value);
+            
+            // Vérification de la validité des entrées
+            if (isNaN(volumePiece) || isNaN(nombrePersonnes) || isNaN(surfaceOuvertures) || volumePiece <= 0 || nombrePersonnes <= 0 || surfaceOuvertures <= 0) {
+                alert("Veuillez entrer des valeurs valides pour tous les champs.");
+                return;
+            }
+            
+            // Facteur de ventilation
+            let facteurVentilation = 0.5;
+            let tauxAir = 0.005; // Taux d'air par personne
+            
+            // Calculs
+            let tempsAeration = volumePiece / (surfaceOuvertures * facteurVentilation);
+            let frequenceAeration = nombrePersonnes * tauxAir;
+
+            // Affichage des résultats
+            document.getElementById('tempsAeration').innerText = tempsAeration.toFixed(2);
+            document.getElementById('frequenceAeration').innerText = frequenceAeration.toFixed(3);
+
+            // Afficher la section de résultats
+            document.getElementById('resultats').style.display = 'block';
+        }
+    </script>
+
+</body>
+</html>
