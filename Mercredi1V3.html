@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcul d'Aération</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, #d9f3fa, #eef2f3);
+            color: #333;
+            overflow-x: hidden;
+        }
+        .container {
+            width: 90%;
+            max-width: 580px;
+            margin: 60px auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.85);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+        h1 {
+            text-align: center;
+            color: #004f6d;
+            font-size: 1.8em;
+            margin-bottom: 1.2em;
+        }
+        label {
+            display: block;
+            margin: 10px 0 4px;
+            font-weight: bold;
+            color: #014c5a;
+        }
+        input[type="number"], input[type="button"] {
+            width: 100%;
+            padding: 5px 1px;
+            margin-bottom: 12px;
+            border: 1px solid #bbb;
+            border-radius: 5px;
+            font-size: 1em;
+            background: #f9fafb;
+            transition: box-shadow 0.2s, transform 0.1s;
+        }
+        input[type="number"]:focus {
+            box-shadow: 0 0 8px #7fb3d5;
+        }
+        input[type="button"] {
+            background: #007bb5;
+            color: #fff;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        input[type="button"]:hover {
+            background: #005b8f;
+            transform: scale(1.02);
+        }
+        .result {
+            background: #e9f5f8;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 8px;
+            display: none;
+        }
+        .result h2 {
+            color: #013b5a;
+        }
+        .result p {
+            font-size: 1em;
+        }
+        .result span {
+            font-weight: bold;
+            color: #007961;
+        }
+        /* Wind animations */
+        .wind {
+            position: absolute;
+            width: 100%;
+            top: 10px;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .wind path {
+            stroke: #a0c4ff;
+            stroke-width: 4;
+            fill: none;
+            opacity: 0.7;
+            stroke-dasharray: 120;
+            animation: windFlow 6s infinite ease-in-out;
+        }
+        @keyframes windFlow {
+            0% {
+                stroke-dashoffset: 120;
+            }
+            100% {
+                stroke-dashoffset: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <svg class="wind" viewBox="0 0 800 200">
+        <path d="M0 80c100-40 150 40 250 0s150 40 250 0 150 40 250 0"></path>
+    </svg>
+    <div class="container">
+        <h1><i class="fas fa-wind"></i> Calcul du Temps de Refroidissement</h1>
+        <label for="volumePiece">Volume de la pièce (m³)</label>
+        <input type="number" id="volumePiece" placeholder="Volume de la pièce" required>
+        
+	<label for="nombrePersonnes">Nombre de personnes</label>
+        <input type="number" id="nombrePersonnes" placeholder="Nombre de personnes" required>
+
+        <label for="T_target">Température minimale acceptée dans la salle (°C) </label>
+        <input type="number" id="T_target" placeholder="Entrer la température minimale" required>
+
+        <label for="C_target">Concentration en PPM cible (PPM) </label>
+        <input type="number" id="C_target" placeholder="Entrer la concentration cible de CO2" required>
+
+
+       
+        <label for="temperatureInt">Température intérieure (°C)</label>
+        <input type="number" id="temperatureInt" placeholder="Température intérieure" required>
+        
+        <label for="temperatureExt">Température extérieure (°C)</label>
+        <input type="number" id="temperatureExt" placeholder="Température extérieure" required>
+               	
+        <label for="concentrationInitiale">Concentration initiale de la pièce en CO2 (PPM)</label>
+        <input type="number" id="concentrationInitiale" placeholder="Concentration initiale de la pièce en CO2" required>
+       
+        <label for="surfaceBaie">Surface des baies vitrées (m²)</label>
+        <input type="number" id="surfaceBaie" placeholder="Surface des baies vitrées" required>
+        <label for="surfaceMurs">Surface des murs (m²)</label>
+        <input type="number" id="surfaceMurs" placeholder="Surface des murs" required>
+        <input type="button" value="Calculer le temps" onclick="calculerAération()">
+        <div class="result" id="resultats">
+            <h2>Résultats</h2>
+            <p>Temps d'aération: <span id="tempsAeration"></span></p>
+        </div>
+    </div>
+
+    <script>
+        function calculerAération() {
+            let volumePiece = parseFloat(document.getElementById('volumePiece').value);
+            let nombrePersonnes = parseFloat(document.getElementById('nombrePersonnes').value);
+            let temperatureInt = parseFloat(document.getElementById('temperatureInt').value);
+            let temperatureExt = parseFloat(document.getElementById('temperatureExt').value);
+      	    let concentrationInitiale = parseFloat(document.getElementById('concentrationInitiale').value);
+            let surfaceBaie = parseFloat(document.getElementById('surfaceBaie').value);
+            let surfaceMurs = parseFloat(document.getElementById('surfaceMurs').value);
+            let T_target = parseFloat(document.getElementById('T_target').value);
+            let C_target = parseFloat(document.getElementById('C_target').value);
+            
+
+
+            if (isNaN(volumePiece) || isNaN(nombrePersonnes) || 
+                isNaN(temperatureInt) || isNaN(temperatureExt) || isNaN(surfaceBaie) || isNaN(surfaceMurs) || isNaN(C_target) || isNaN(T_target) || isNaN(concentrationInitiale)) {
+                alert("Veuillez entrer des valeurs valides pour tous les champs.");
+                return;
+            }
+            let temperatureCoul = temperatureInt; n
+            let A = (nombrePersonnes * 100 + 11.522 * volumePiece) / (volumePiece * 1306);
+            let B = (0.2 / volumePiece) + ((1.5 * surfaceBaie) / (volumePiece * 1306)) + ((1.5 * surfaceMurs) / (volumePiece * 1306));
+            let C = (1.5 * surfaceMurs) / (volumePiece * 1306);
+            let k = (A + B * (temperatureExt + 273.15) + C * (temperatureCoul + 273.15)) / (B + C);
+	    let L = 0.0486 / volumePiece;
+
+            let T_initial = temperatureInt + 273.15;
+            T_target = T_target + 273.15;
+            
+
+            let t = 0;
+            let step = 5;
+            let T_t;
+	    let C_t;
+
+            do {
+                t += step;
+                T_t = k * (1 - Math.exp(-t * (B + C))) + T_initial * Math.exp(-t * (B + C));
+		C_t = 500 + concentrationInitiale * Math.exp(-t * L);
+            } while (T_t > T_target && t <= 86400 && C_t > C_target);
+
+            document.getElementById('tempsAeration').innerText = T_t > T_target ? "Plus de 24 heures (limite atteinte)" : t.toFixed(0) + " secondes";
+            document.getElementById('resultats').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
